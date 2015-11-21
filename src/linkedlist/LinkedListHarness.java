@@ -15,40 +15,56 @@ import java.util.LinkedList;
 public class LinkedListHarness {
 
 	/**
+	 * Menu return values.
+	 */
+	public enum Choice {
+		ERROR,
+		APPEND_LIST_ITEM,
+		DUMP_LIST,
+		EXIT_APPLICATION
+	}
+
+	/**
 	 * Display simple user menu.
 	 * 
 	 * @return Return the users numerical selection on success, 0 otherwise.
 	 */
-	public static int menu() {
-		int i;
+	public static Choice menu() {
+		int choiceIdx;
+		Choice choice;
 		String str;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 		System.out.print("\n");
 		System.out.print("Menu\n");
 		System.out.print("------\n");
-		System.out.print("  1 Add an item.\n");
-		System.out.print("  2 Dump the list.\n");
-		System.out.print("  3 Exit\n");
+		System.out.print("  " + Choice.APPEND_LIST_ITEM.ordinal() + " Add an item.\n");
+		System.out.print("  " + Choice.DUMP_LIST.ordinal() + " Dump the list.\n");
+		System.out.print("  " + Choice.EXIT_APPLICATION.ordinal() + " Exit\n");
 		System.out.print("\n");
 		System.out.print("Choice: ");
 
         try {
             str = reader.readLine().trim();
         } catch(IOException ioe){
-            System.err.println("Read failed.\n");
-			return 0;
+            System.err.println("Read failed. " + ioe.getMessage() + "\n");
+			return Choice.ERROR;
 		}
 
 		try {
-			i = Integer.parseInt(str);
+			choiceIdx = Integer.parseInt(str);
 		} catch(NumberFormatException nfe) {
-			return 0;
+			return Choice.ERROR;
 		}
-	
-		return i;
-	}
 
+		try {
+			choice = Choice.values()[choiceIdx];
+		} catch (Exception e) {
+			choice = Choice.ERROR;
+		}
+
+		return choice;
+	}
 
 	/**
 	 * Dump the contents of the list.
@@ -71,12 +87,12 @@ public class LinkedListHarness {
 	}	
 
 	/**
-	 * Add an item to the list.
+	 * Add an item to the end of the list.
 	 * 
 	 * @param list The list.
 	 * @return boolean Return true on success, false otherwise.
 	 */
-	public static boolean addItem(LinkedList list) {
+	public static boolean appendItem(LinkedList list) {
 		boolean stat;
 		String str;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -113,8 +129,7 @@ public class LinkedListHarness {
 	 * @param args The command line arguments.
 	 */
 	public static void main(String[] args) {
-
-		int choice;
+		Choice choice;
 
 		// create list to store data
 		LinkedList ll = new LinkedList();
@@ -122,22 +137,21 @@ public class LinkedListHarness {
 		// loop prompting the user for an action
 		do {
 			choice = menu();
-			
+
 			switch (choice) {
-				case 1:
-					addItem(ll);
+				case APPEND_LIST_ITEM:
+					appendItem(ll);
 					break;
-				case 2:
+				case DUMP_LIST:
 					dumpList(ll);
 					break;
-				case 3:
+				case EXIT_APPLICATION:
 					break;
 				default:
 					System.err.print("Invalid choice.\n");
 			}
 
-		} while (choice != 3);
-
+		} while (choice != Choice.EXIT_APPLICATION);
 	}
 
 }
